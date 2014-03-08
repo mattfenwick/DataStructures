@@ -3,19 +3,16 @@
 
 // limited to strings, for now, b/c it uses `in` operator and object keys
 function Set(elements) {
-    var elems = {};
+    var elems = {},
+        self = this;
     elements.map(function(e) {
-	if ( e in elems ) {
-	    // nothing to do -- it's just a dupe
-	} else {
-	    elems[e] = 1;
-	}
+        self.add(e);
     });
     this._elements = elems;
 }
 
 Set.prototype.has = function(e) {
-    return e in this._elements;
+    return this._elements.hasOwnProperty(e);
 };
 
 Set.prototype.add = function(e) {
@@ -27,12 +24,13 @@ Set.prototype.del = function(e) {
 };
 
 Set.prototype.elems = function() {
+    // I guess Object.getOwnPropertyNames vs. Object.keys doesn't really matter here
     return Object.keys(this._elements);
 };
 
 Set.prototype.minus = function(other) {
     function predicate(e) {
-	return !other.has(e);
+        return !other.has(e);
     }
     var elems = this.elems().filter(predicate);
     return new Set(elems);
@@ -40,4 +38,3 @@ Set.prototype.minus = function(other) {
 
 
 module.exports = Set;
-
